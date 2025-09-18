@@ -459,6 +459,18 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sn', function()
         builtin.find_files { cwd = vim.fn.stdpath 'config' }
       end, { desc = '[S]earch [N]eovim files' })
+
+      -- [leader of toggle setting]
+      -- on/off relative number
+      vim.keymap.set('n', '<leader>tr', function()
+        vim.wo.number = true
+        vim.wo.relativenumber = not vim.wo.relativenumber
+      end, { desc = '[T]oggle [R]elative number' })
+
+      -- on/off invisible char
+      vim.keymap.set('n', '<leader>ti', function()
+        vim.o.list = not vim.o.list
+      end, { desc = '[T]oggle [I]nvisibles (list)' })
     end,
   },
 
