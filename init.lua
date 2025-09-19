@@ -198,6 +198,14 @@ vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left wind
 vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
 vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
+vim.keymap.set('i', ';;', '<Esc>', { desc = 'Exit insert mode' })
+-- VS Code ：Ctrl+s save file
+vim.keymap.set({ 'n', 'v' }, '<C-s>', '<cmd>update<cr>', { desc = 'Save file' })
+vim.keymap.set('i', '<C-s>', '<Esc><cmd>update<cr>', { desc = 'Save file' })
+-- VS Code ：Ctrl+/ comment
+vim.keymap.set('n', '<C-_>', 'gcc', { remap = true, desc = 'Toggle comment' })
+vim.keymap.set('v', '<C-_>', 'gc', { remap = true, desc = 'Toggle comment' })
+vim.keymap.set('i', '<C-_>', '<Esc>gccgi', { remap = true, desc = 'Toggle comment' })
 
 -- NOTE: Some terminals have colliding keymaps or are not able to send distinct keycodes
 -- vim.keymap.set("n", "<C-S-h>", "<C-w>H", { desc = "Move window to the left" })
