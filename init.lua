@@ -206,6 +206,7 @@ vim.keymap.set('i', '<C-s>', '<Esc><cmd>update<cr>', { desc = 'Save file' })
 vim.keymap.set('n', '<C-_>', 'gcc', { remap = true, desc = 'Toggle comment' })
 vim.keymap.set('v', '<C-_>', 'gc', { remap = true, desc = 'Toggle comment' })
 vim.keymap.set('i', '<C-_>', '<Esc>gccgi', { remap = true, desc = 'Toggle comment' })
+-- Git: show diff
 
 -- NOTE: Some terminals have colliding keymaps or are not able to send distinct keycodes
 -- vim.keymap.set("n", "<C-S-h>", "<C-w>H", { desc = "Move window to the left" })
@@ -354,6 +355,7 @@ require('lazy').setup({
       spec = {
         { '<leader>s', group = '[S]earch' },
         { '<leader>t', group = '[T]oggle' },
+        { '<leader>g', group = '[G]it' },
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
       },
     },
@@ -479,6 +481,15 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>ti', function()
         vim.o.list = not vim.o.list
       end, { desc = '[T]oggle [I]nvisibles (list)' })
+
+      -- [leader of git setting]
+      -- on/off git
+      vim.keymap.set('n', '<leader>gg', '<cmd>Git<cr>', { desc = '[G]it status (fugitive)' })
+
+      -- on/off git diff
+      vim.keymap.set('n', '<leader>gd', function()
+        require('gitsigns').preview_hunk_inline()
+      end, { desc = '[G]it: toggle [d]eleted lines' })
     end,
   },
 
