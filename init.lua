@@ -969,6 +969,37 @@ require('lazy').setup({
       --  Check out: https://github.com/echasnovski/mini.nvim
     end,
   },
+
+  { -- LazyGit integration for Neovim
+    'kdheepak/lazygit.nvim',
+    lazy = true,
+    cmd = {
+      'LazyGit',
+      'LazyGitConfig',
+      'LazyGitCurrentFile',
+      'LazyGitFilter',
+      'LazyGitFilterCurrentFile',
+    },
+    -- optional for floating window border decoration
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+    },
+    keys = {
+      { '<leader>lg', '<cmd>LazyGit<cr>', desc = 'LazyGit' },
+      { '<leader>lG', '<cmd>LazyGitCurrentFile<cr>', desc = 'LazyGit Current File' },
+      { '<leader>lC', '<cmd>LazyGitConfig<cr>', desc = 'LazyGit Config' },
+      { '<leader>lF', '<cmd>LazyGitFilter<cr>', desc = 'LazyGit Filter' },
+      { '<leader>lf', '<cmd>LazyGitFilterCurrentFile<cr>', desc = 'LazyGit Filter Current File' },
+    },
+    config = function()
+      -- Configure LazyGit settings
+      vim.g.lazygit_floating_window_winblend = 0 -- transparency of floating window
+      vim.g.lazygit_floating_window_scaling_factor = 0.9 -- scaling factor for floating window
+      vim.g.lazygit_floating_window_border_chars = { '╭', '─', '╮', '│', '╯', '─', '╰', '│' } -- customize lazygit popup window border characters
+      vim.g.lazygit_floating_window_use_plenary = 1 -- use plenary.nvim to manage floating window if available
+      vim.g.lazygit_use_neovim_remote = 1 -- fallback to 0 if neovim-remote is not installed
+    end,
+  },
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
