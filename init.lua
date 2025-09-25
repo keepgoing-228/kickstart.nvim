@@ -357,6 +357,7 @@ require('lazy').setup({
         { '<leader>t', group = '[T]oggle' },
         { '<leader>g', group = '[G]it' },
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
+        { '<leader>l', group = '[L]azyGit' },
       },
     },
   },
@@ -1000,6 +1001,88 @@ require('lazy').setup({
       vim.g.lazygit_use_neovim_remote = 1 -- fallback to 0 if neovim-remote is not installed
     end,
   },
+
+  { -- Oil.nvim - File explorer that lets you edit your filesystem like a buffer
+    'stevearc/oil.nvim',
+    lazy = true,
+    cmd = { 'Oil', 'OilOpen', 'OilClose' },
+    keys = {
+      { '<leader>o', '<cmd>Oil --float<cr>', desc = 'Open Oil in floating window' },
+    },
+    config = function()
+      require('oil').setup {
+        -- Oil will automatically hide hidden files, but only after the first time you open a directory.
+        -- If you want to be able to see hidden files on startup, set this to false.
+        default_file_explorer = true,
+        -- Idle timeout: how long to wait for new keystrokes after the last one (in ms)
+        -- This is used for highlighting the current file in the explorer and for
+        -- the preview window. The preview window will automatically close after this
+        -- much idle time.
+        idle_delay = 2000,
+        -- Whether to delete hidden files on trash
+        delete_to_trash = false,
+        -- Skip the confirmation popup for simple operations
+        skip_confirm_for_simple_edits = false,
+        -- Keymaps in oil buffer. Can be any value that `vim.keymap.set` accepts OR a table of keymap
+        -- options with a `callback` (e.g. { callback = function() ... end, desc = "", mode = "n" })
+        -- Additionally, if it is a string that matches "action.<name>",
+        -- it will use the mapping at require("oil.action").<name>
+        -- Set to `false` to remove a keymap
+        keymaps = {
+          ['g?'] = 'actions.show_help',
+          ['<CR>'] = 'actions.select',
+          -- ['<C-s>'] = 'actions.select_split',
+          ['<C-v>'] = 'actions.select_vsplit',
+          ['<C-t>'] = 'actions.select_tab',
+          ['<C-p>'] = 'actions.preview',
+          ['q'] = 'actions.close',
+          ['<C-c>'] = 'actions.close',
+          ['<C-l>'] = 'actions.refresh',
+          ['-'] = 'actions.parent',
+          ['_'] = 'actions.open_cwd',
+          ['`'] = 'actions.cd',
+          ['~'] = 'actions.tcd',
+          ['gs'] = 'actions.change_sort',
+          ['gx'] = 'actions.open_external',
+          ['g.'] = 'actions.toggle_hidden',
+          ['g\\'] = 'actions.toggle_trash',
+        },
+        -- Set to false to disable all of the above keymaps
+        use_default_keymaps = false,
+        -- Configuration for the floating window in oil.open_float
+        float = {
+          -- Padding around the floating window
+          padding = 2,
+          -- max_width and max_height can be integers or a float between 0 and 1 (e.g. 0.4 for 40%)
+          max_width = 0.9,
+          max_height = 0.9,
+          border = 'rounded',
+          win_options = {
+            winblend = 0,
+          },
+        },
+        -- Configuration for the file preview window
+        preview_win = {
+          -- Whether the preview window is automatically updated when the cursor is moved
+          update_on_cursor_moved = true,
+          -- How to open the preview window "load"|"scratch"|"fast_scratch"
+          preview_method = 'fast_scratch',
+        },
+        -- Configuration for the floating progress window
+        progress = {
+          max_width = 0.9,
+          min_width = { 40, 0.4 },
+          max_height = { 10, 0.9 },
+          min_height = { 5, 0.1 },
+          border = 'rounded',
+          win_options = {
+            winblend = 0,
+          },
+        },
+      }
+    end,
+  },
+
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
