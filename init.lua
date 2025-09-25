@@ -206,7 +206,18 @@ vim.keymap.set('i', '<C-s>', '<Esc><cmd>update<cr>', { desc = 'Save file' })
 vim.keymap.set('n', '<C-_>', 'gcc', { remap = true, desc = 'Toggle comment' })
 vim.keymap.set('v', '<C-_>', 'gc', { remap = true, desc = 'Toggle comment' })
 vim.keymap.set('i', '<C-_>', '<Esc>gccgi', { remap = true, desc = 'Toggle comment' })
--- Git: show diff
+-- Tab management
+vim.keymap.set('n', '<leader>tc', '<cmd>tabclose<cr>', { desc = '[T]ab [C]lose' })
+vim.keymap.set('n', '<leader>tn', '<cmd>tabnew<cr>', { desc = '[T]ab [N]ew' })
+vim.keymap.set('n', '<leader>to', '<cmd>tabonly<cr>', { desc = '[T]ab [O]nly' })
+vim.keymap.set('n', '<leader>tt', '<cmd>tabnext<cr>', { desc = '[T]ab [T]oggle' })
+vim.keymap.set('n', '<leader>tp', '<cmd>tabprevious<cr>', { desc = '[T]ab [P]revious' })
+vim.keymap.set('n', '<leader>t1', '1gt', { desc = 'Go to tab 1' })
+vim.keymap.set('n', '<leader>t2', '2gt', { desc = 'Go to tab 2' })
+vim.keymap.set('n', '<leader>t3', '3gt', { desc = 'Go to tab 3' })
+vim.keymap.set('n', '<leader>t4', '4gt', { desc = 'Go to tab 4' })
+vim.keymap.set('n', '<leader>t5', '5gt', { desc = 'Go to tab 5' })
+
 
 -- NOTE: Some terminals have colliding keymaps or are not able to send distinct keycodes
 -- vim.keymap.set("n", "<C-S-h>", "<C-w>H", { desc = "Move window to the left" })
