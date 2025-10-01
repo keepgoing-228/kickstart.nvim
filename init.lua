@@ -218,7 +218,6 @@ vim.keymap.set('n', '<leader>t3', '3gt', { desc = 'Go to tab 3' })
 vim.keymap.set('n', '<leader>t4', '4gt', { desc = 'Go to tab 4' })
 vim.keymap.set('n', '<leader>t5', '5gt', { desc = 'Go to tab 5' })
 
-
 -- NOTE: Some terminals have colliding keymaps or are not able to send distinct keycodes
 -- vim.keymap.set("n", "<C-S-h>", "<C-w>H", { desc = "Move window to the left" })
 -- vim.keymap.set("n", "<C-S-l>", "<C-w>L", { desc = "Move window to the right" })
@@ -238,6 +237,14 @@ vim.api.nvim_create_autocmd('TextYankPost', {
     vim.hl.on_yank()
   end,
 })
+
+vim.keymap.set('n', '<leader>st', function()
+  vim.cmd.vnew()
+  vim.cmd.term()
+  vim.cmd.wincmd 'J'
+  vim.api.nvim_win_set_height(0, 8)
+  vim.cmd.startinsert()
+end, { desc = '[S]earch [T]erminal' })
 
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
