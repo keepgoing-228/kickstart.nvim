@@ -1041,6 +1041,9 @@ require('lazy').setup({
         -- Oil will automatically hide hidden files, but only after the first time you open a directory.
         -- If you want to be able to see hidden files on startup, set this to false.
         default_file_explorer = true,
+        view_options = {
+          show_hidden = true,
+        },
         -- Idle timeout: how long to wait for new keystrokes after the last one (in ms)
         -- This is used for highlighting the current file in the explorer and for
         -- the preview window. The preview window will automatically close after this
