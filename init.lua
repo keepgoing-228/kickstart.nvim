@@ -1146,6 +1146,22 @@ require('lazy').setup({
     end,
   },
 
+  { -- Render Markdown directly in the buffer
+    'MeanderingProgrammer/render-markdown.nvim',
+    dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' },
+    ft = { 'markdown' },
+    keys = {
+      { '<leader>tm', '<cmd>RenderMarkdown toggle<cr>', desc = '[T]oggle [M]arkdown render' },
+    },
+    opts = {
+      enabled = false,
+      indent = {
+        enabled = true,
+        skip_heading = true,
+      },
+    },
+  },
+
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
