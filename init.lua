@@ -244,13 +244,14 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
-vim.keymap.set('n', '<leader>st', function()
+vim.keymap.set('n', '<leader>ts', function()
   vim.cmd.vnew()
   vim.cmd.term()
   vim.cmd.wincmd 'J'
   vim.api.nvim_win_set_height(0, 8)
   vim.cmd.startinsert()
-end, { desc = '[S]earch [T]erminal' })
+end, { desc = '[T]oggle [S]hell terminal' })
+vim.keymap.set('t', '<C-x>', '<C-\\><C-n><cmd>bd!<cr>', { desc = 'Close terminal' })
 
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
