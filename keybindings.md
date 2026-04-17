@@ -85,19 +85,13 @@
 
 | Key | Mode | Description |
 |-----|------|-------------|
-| `]c` | Normal | Jump to next git change |
-| `[c` | Normal | Jump to previous git change |
+| `]h` | Normal | Jump to next git hunk |
+| `[h` | Normal | Jump to previous git hunk |
 | `<leader>hs` | Normal / Visual | Stage hunk |
 | `<leader>hr` | Normal / Visual | Reset hunk |
-| `<leader>hS` | Normal | Stage entire buffer |
 | `<leader>hu` | Normal | Undo stage hunk |
-| `<leader>hR` | Normal | Reset entire buffer |
 | `<leader>hp` | Normal | Preview hunk |
 | `<leader>hb` | Normal | Blame line |
-| `<leader>hd` | Normal | Diff against index |
-| `<leader>hD` | Normal | Diff against last commit |
-| `<leader>tb` | Normal | Toggle inline git blame |
-| `<leader>tD` | Normal | Toggle show deleted |
 
 ## Oil.nvim (File Explorer)
 
@@ -114,7 +108,7 @@
 | `Ctrl+v` | Open in vertical split |
 | `Ctrl+t` | Open in new tab |
 | `Ctrl+p` | Preview |
-| `q` / `Ctrl+c` | Close Oil |
+| `Esc` | Close Oil |
 | `Ctrl+l` | Refresh |
 | `-` | Go to parent directory |
 | `_` | Open cwd |
@@ -125,13 +119,27 @@
 | `g.` | Toggle hidden files |
 | `g\` | Toggle trash |
 
-## Terminal
+## Neo-tree (File Tree)
 
 | Key | Description |
 |-----|-------------|
-| `<leader>tr` | Toggle terminal (right side) |
-| `<leader>ti` | Toggle terminal (bottom) |
-| `<leader>st` | Toggle terminal |
+| `\` | Open / close neo-tree |
+
+## Toggle
+
+| Key | Description |
+|-----|-------------|
+| `<leader>tr` | Toggle relative number |
+| `<leader>ti` | Toggle invisibles (list chars) |
+| `<leader>th` | Toggle inlay hints (LSP) |
+| `<leader>tm` | Toggle markdown render |
+
+## Terminal
+
+| Key | Mode | Description |
+|-----|------|-------------|
+| `<leader>ts` | Normal | Open terminal (bottom) |
+| `Ctrl+x` | Terminal | Close terminal |
 
 ## Diagnostics
 
