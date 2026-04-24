@@ -1156,6 +1156,18 @@ require('lazy').setup({
     end,
   },
 
+  { -- Select Python virtual environment
+    'linux-cultist/venv-selector.nvim',
+    dependencies = { 'neovim/nvim-lspconfig', 'nvim-telescope/telescope.nvim' },
+    ft = { 'python' },
+    keys = {
+      { '<leader>vs', '<cmd>VenvSelect<cr>', desc = '[V]env [S]elect' },
+    },
+    opts = {
+      fd_binary_name = 'fdfind',
+    },
+  },
+
   { -- Render Markdown directly in the buffer
     'MeanderingProgrammer/render-markdown.nvim',
     dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' },
