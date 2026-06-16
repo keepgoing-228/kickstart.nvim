@@ -249,6 +249,15 @@ vim.keymap.set('n', '<leader>ts', function()
   vim.cmd.term()
   vim.cmd.wincmd 'J'
   vim.api.nvim_win_set_height(0, 8)
+  -- Seamless window navigation out of this shell terminal: <C-h/j/k/l> switch windows
+  -- just like in normal mode and in the Claude panel. Buffer-local keeps it scoped to
+  -- this terminal (other terminals / TUI programs are untouched). Note <C-l> now means
+  -- "go to the right window" here, so it no longer clears the shell.
+  for _, dir in ipairs { 'h', 'j', 'k', 'l' } do
+    vim.keymap.set('t', '<C-' .. dir .. '>', function()
+      vim.cmd.wincmd(dir)
+    end, { buffer = true, desc = 'Go to ' .. dir .. ' window' })
+  end
   vim.cmd.startinsert()
 end, { desc = '[T]oggle [S]hell terminal' })
 vim.keymap.set('t', '<C-x>', '<C-\\><C-n><cmd>bd!<cr>', { desc = 'Close terminal' })
@@ -414,6 +423,7 @@ require('lazy').setup({
         { '<leader>g', group = '[G]it' },
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
         { '<leader>l', group = '[L]azyGit' },
+        { '<leader>a', group = '[A]I/Claude Code' },
       },
     },
   },
@@ -1220,6 +1230,106 @@ require('lazy').setup({
     -- with nvim-treesitter. You should go explore a few and see what interests you:
     --    - Show your current context: https://github.com/nvim-treesitter/nvim-treesitter-context
     --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
+  },
+
+  { -- Claude Code integration (pairs Neovim with the Claude Code CLI over its MCP protocol)
+    'coder/claudecode.nvim',
+    dependencies = { 'folke/snacks.nvim' }, -- terminal UI provider
+    opts = {
+      terminal = {
+        snacks_win_opts = {
+          keys = {
+            -- Close the Claude panel with <C-x>, matching the <leader>ts terminal.
+            -- This buffer-local mapping overrides the global <C-x> (`bd!`): force-
+            -- deleting the buffer kills Claude abruptly, which is what produces
+            --   [terminal] Claude exited with code -1   and   [server] ECONNRESET.
+            -- self:hide() just hides the window; the session keeps running and
+            -- <leader>ac brings it right back.
+            claude_hide = {
+              '<C-x>',
+              function(self)
+                self:hide()
+              end,
+              mode = 't',
+              desc = 'Hide Claude',
+            },
+            -- Seamless window navigation from inside the Claude panel: <C-h/j/k/l>
+            -- mirror your normal-mode window moves, so the same keys switch windows
+            -- everywhere. Claude is a right split, so <C-h> lands you back in your code
+            -- (Claude stays open). These are buffer-local, so they only apply here --
+            -- which also means Claude's own <C-k>/<C-l> actions are shadowed inside this
+            -- panel. To stay *inside* Claude in normal mode (scroll/copy), use <C-\><C-n>.
+            claude_nav_h = {
+              '<C-h>',
+              function()
+                vim.cmd 'wincmd h'
+              end,
+              mode = 't',
+              desc = 'Go to left window',
+            },
+            claude_nav_j = {
+              '<C-j>',
+              function()
+                vim.cmd 'wincmd j'
+              end,
+              mode = 't',
+              desc = 'Go to lower window',
+            },
+            claude_nav_k = {
+              '<C-k>',
+              function()
+                vim.cmd 'wincmd k'
+              end,
+              mode = 't',
+              desc = 'Go to upper window',
+            },
+            claude_nav_l = {
+              '<C-l>',
+              function()
+                vim.cmd 'wincmd l'
+              end,
+              mode = 't',
+              desc = 'Go to right window',
+            },
+          },
+        },
+      },
+    },
+    cmd = {
+      'ClaudeCode',
+      'ClaudeCodeFocus',
+      'ClaudeCodeSelectModel',
+      'ClaudeCodeAdd',
+      'ClaudeCodeSend',
+      'ClaudeCodeTreeAdd',
+      'ClaudeCodeStatus',
+      'ClaudeCodeStart',
+      'ClaudeCodeStop',
+      'ClaudeCodeOpen',
+      'ClaudeCodeClose',
+      'ClaudeCodeDiffAccept',
+      'ClaudeCodeDiffDeny',
+      'ClaudeCodeCloseAllDiffs',
+    },
+    keys = {
+      { '<leader>a', nil, desc = 'AI/Claude Code' },
+      { '<leader>ac', '<cmd>ClaudeCode<cr>', desc = 'Toggle Claude' },
+      { '<leader>af', '<cmd>ClaudeCodeFocus<cr>', desc = 'Focus Claude' },
+      { '<leader>ar', '<cmd>ClaudeCode --resume<cr>', desc = 'Resume Claude' },
+      { '<leader>aC', '<cmd>ClaudeCode --continue<cr>', desc = 'Continue Claude' },
+      { '<leader>am', '<cmd>ClaudeCodeSelectModel<cr>', desc = 'Select Claude model' },
+      { '<leader>ab', '<cmd>ClaudeCodeAdd %<cr>', desc = 'Add current buffer' },
+      { '<leader>as', '<cmd>ClaudeCodeSend<cr>', mode = 'v', desc = 'Send to Claude' },
+      {
+        '<leader>as',
+        '<cmd>ClaudeCodeTreeAdd<cr>',
+        desc = 'Add file',
+        ft = { 'NvimTree', 'neo-tree', 'oil', 'minifiles', 'netrw', 'snacks_picker_list' },
+      },
+      -- Diff management
+      { '<leader>aa', '<cmd>ClaudeCodeDiffAccept<cr>', desc = 'Accept diff' },
+      { '<leader>ad', '<cmd>ClaudeCodeDiffDeny<cr>', desc = 'Deny diff' },
+    },
   },
 
   -- The following comments only work if you have downloaded the kickstart repo, not just copy pasted the
