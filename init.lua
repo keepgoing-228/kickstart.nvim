@@ -204,6 +204,25 @@ vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left wind
 vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
 vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
+-- Jump straight back to the code editor from anywhere -- including from inside a terminal
+-- (Claude / toggleterm), since this is also a terminal-mode mapping. Focuses the previous
+-- window if it holds a real file, otherwise the first file window in the tab (buftype '').
+vim.keymap.set({ 'n', 't' }, '<C-g>', function()
+  local function is_file_win(win)
+    return vim.api.nvim_win_is_valid(win) and vim.bo[vim.api.nvim_win_get_buf(win)].buftype == ''
+  end
+  local prev = vim.fn.win_getid(vim.fn.winnr '#')
+  if is_file_win(prev) then
+    vim.api.nvim_set_current_win(prev)
+    return
+  end
+  for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+    if is_file_win(win) then
+      vim.api.nvim_set_current_win(win)
+      return
+    end
+  end
+end, { desc = 'Focus the code editor window' })
 vim.keymap.set('i', ';;', '<Esc>', { desc = 'Exit insert mode' })
 -- VS Code ：Ctrl+s save file
 vim.keymap.set({ 'n', 'v' }, '<C-s>', '<cmd>update<cr>', { desc = 'Save file' })
