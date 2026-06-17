@@ -244,22 +244,16 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
+-- toggleterm.nvim: manage any number of terminals, add/remove/switch freely.
+-- <leader>ts toggles a terminal; prefix a count to target terminal N (e.g. 2<leader>ts
+-- opens/toggles terminal 2). The plugin itself -- and the in-terminal <C-h/j/k/l> nav
+-- and <C-x> hide keymaps -- is configured in its lazy spec further down; these mappings
+-- just drive its commands (and load it on first use).
 vim.keymap.set('n', '<leader>ts', function()
-  vim.cmd.vnew()
-  vim.cmd.term()
-  vim.cmd.wincmd 'J'
-  vim.api.nvim_win_set_height(0, 8)
-  -- Seamless window navigation out of this shell terminal: <C-h/j/k/l> switch windows
-  -- just like in normal mode and in the Claude panel. Buffer-local keeps it scoped to
-  -- this terminal (other terminals / TUI programs are untouched). Note <C-l> now means
-  -- "go to the right window" here, so it no longer clears the shell.
-  for _, dir in ipairs { 'h', 'j', 'k', 'l' } do
-    vim.keymap.set('t', '<C-' .. dir .. '>', function()
-      vim.cmd.wincmd(dir)
-    end, { buffer = true, desc = 'Go to ' .. dir .. ' window' })
-  end
-  vim.cmd.startinsert()
-end, { desc = '[T]oggle [S]hell terminal' })
+  require('toggleterm').toggle(vim.v.count1)
+end, { desc = '[T]oggle [S]hell terminal (count = terminal N)' })
+vim.keymap.set('n', '<leader>tl', '<cmd>TermSelect<cr>', { desc = '[T]erminal [L]ist / switch' })
+vim.keymap.set('n', '<leader>ta', '<cmd>ToggleTermToggleAll<cr>', { desc = '[T]oggle [A]ll terminals' })
 vim.keymap.set('t', '<C-x>', '<C-\\><C-n><cmd>bd!<cr>', { desc = 'Close terminal' })
 
 -- [[ Install `lazy.nvim` plugin manager ]]
@@ -1230,6 +1224,48 @@ require('lazy').setup({
     -- with nvim-treesitter. You should go explore a few and see what interests you:
     --    - Show your current context: https://github.com/nvim-treesitter/nvim-treesitter-context
     --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
+  },
+
+  { -- toggleterm.nvim: any number of terminals you can add / remove / switch freely
+    'akinsho/toggleterm.nvim',
+    version = '*',
+    cmd = { 'ToggleTerm', 'ToggleTermToggleAll', 'TermSelect', 'TermExec' },
+    opts = {
+      size = 15, -- height (in lines) for horizontal terminals
+      direction = 'horizontal',
+      start_in_insert = true,
+      persist_size = true,
+      persist_mode = true,
+      close_on_exit = true, -- typing `exit` removes that terminal (your "減" action)
+    },
+    config = function(_, opts)
+      require('toggleterm').setup(opts)
+
+      -- Inside toggleterm buffers, match the rest of your terminals: <C-h/j/k/l> switch
+      -- windows (buffer-local) and <C-x> hides the panel (the shell keeps running; type
+      -- `exit` to actually remove a terminal). The <leader>ts / <leader>tl / <leader>ta
+      -- driving keymaps live near the top of init.lua.
+      vim.api.nvim_create_autocmd('TermOpen', {
+        group = vim.api.nvim_create_augroup('toggleterm-keymaps', { clear = true }),
+        pattern = 'term://*toggleterm#*',
+        callback = function()
+          local o = { buffer = 0 }
+          for _, dir in ipairs { 'h', 'j', 'k', 'l' } do
+            vim.keymap.set('t', '<C-' .. dir .. '>', function()
+              vim.cmd.wincmd(dir)
+            end, o)
+          end
+          -- Hide just this terminal (keeps it running); re-open via <leader>ts + its count.
+          -- Re-toggling its own id (b:toggle_number) closes it through toggleterm's own
+          -- state tracking, so toggle state stays in sync.
+          vim.keymap.set('t', '<C-x>', function()
+            if vim.b.toggle_number then
+              require('toggleterm').toggle(vim.b.toggle_number)
+            end
+          end, o)
+        end,
+      })
+    end,
   },
 
   { -- Claude Code integration (pairs Neovim with the Claude Code CLI over its MCP protocol)
