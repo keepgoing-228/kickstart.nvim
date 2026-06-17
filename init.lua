@@ -282,11 +282,32 @@ local function force_term_redraw()
   end, 40)
 end
 
--- Auto-repaint: going from terminal-normal mode back to terminal mode (nt -> t).
+-- Auto-repaint when you RESUME a terminal in place after <C-\><C-n> (select/yank then i).
+-- That is an nt -> t transition -- but so is simply *focusing* a terminal from another
+-- window (it auto-enters terminal mode), and repainting there would shrink-resize the
+-- window and nudge its border for nothing. So we skip the repaint right after entering a
+-- terminal window from elsewhere, and only fire it for an in-place resume.
+local redraw_group = vim.api.nvim_create_augroup('term-redraw-on-resume', { clear = true })
+local just_focused_term = false
+vim.api.nvim_create_autocmd('WinEnter', {
+  group = redraw_group,
+  callback = function()
+    if vim.bo.buftype == 'terminal' then
+      just_focused_term = true
+      -- the entry's own nt->t fires within this short window; then re-arm for real resumes
+      vim.defer_fn(function()
+        just_focused_term = false
+      end, 100)
+    end
+  end,
+})
 vim.api.nvim_create_autocmd('ModeChanged', {
   pattern = 'nt:t',
-  group = vim.api.nvim_create_augroup('term-redraw-on-resume', { clear = true }),
+  group = redraw_group,
   callback = function()
+    if just_focused_term then
+      return -- entered the terminal from another window: nothing stale to repaint
+    end
     -- schedule so the window resize runs outside the ModeChanged callback context
     vim.schedule(force_term_redraw)
   end,
