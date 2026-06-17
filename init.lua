@@ -244,6 +244,35 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
+-- Force a TUI running in a terminal (Claude / toggleterm) to repaint. After you drop to
+-- terminal-normal mode to select + yank and then resume typing, the TUI's screen can be
+-- left stale because nothing tells it to redraw -- the half-typed input is still there,
+-- just not painted. Briefly shrinking the window resizes the PTY (SIGWINCH), which
+-- forces a clean repaint; the original size is restored right after.
+local function force_term_redraw()
+  local win = vim.api.nvim_get_current_win()
+  local h = vim.api.nvim_win_get_height(win)
+  local w = vim.api.nvim_win_get_width(win)
+  pcall(vim.api.nvim_win_set_height, win, math.max(1, h - 1))
+  pcall(vim.api.nvim_win_set_width, win, math.max(1, w - 1))
+  vim.defer_fn(function()
+    if vim.api.nvim_win_is_valid(win) then
+      pcall(vim.api.nvim_win_set_height, win, h)
+      pcall(vim.api.nvim_win_set_width, win, w)
+    end
+  end, 40)
+end
+
+-- Auto-repaint: going from terminal-normal mode back to terminal mode (nt -> t).
+vim.api.nvim_create_autocmd('ModeChanged', {
+  pattern = 'nt:t',
+  group = vim.api.nvim_create_augroup('term-redraw-on-resume', { clear = true }),
+  callback = function()
+    -- schedule so the window resize runs outside the ModeChanged callback context
+    vim.schedule(force_term_redraw)
+  end,
+})
+
 -- toggleterm.nvim: manage any number of terminals, add/remove/switch freely.
 -- <leader>ts toggles a terminal; prefix a count to target terminal N (e.g. 2<leader>ts
 -- opens/toggles terminal 2). The plugin itself -- and the in-terminal <C-h/j/k/l> nav
