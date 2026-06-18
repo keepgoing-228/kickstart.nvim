@@ -266,19 +266,19 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 -- Force a TUI running in a terminal (Claude / toggleterm) to repaint. After you drop to
 -- terminal-normal mode to select + yank and then resume typing, the TUI's screen can be
 -- left stale because nothing tells it to redraw -- the half-typed input is still there,
--- just not painted. Briefly shrinking the window resizes the PTY (SIGWINCH), which
--- forces a clean repaint; the original size is restored right after.
+-- just not painted. We briefly nudge the PSEUDO-TERMINAL size (SIGWINCH), which forces a
+-- clean repaint, then set it straight back. This resizes the PTY, NOT the nvim window, so
+-- the window border never moves (an earlier window-resize version shifted the border).
 local function force_term_redraw()
-  local win = vim.api.nvim_get_current_win()
-  local h = vim.api.nvim_win_get_height(win)
-  local w = vim.api.nvim_win_get_width(win)
-  pcall(vim.api.nvim_win_set_height, win, math.max(1, h - 1))
-  pcall(vim.api.nvim_win_set_width, win, math.max(1, w - 1))
+  local job = vim.b.terminal_job_id
+  if not job then
+    return
+  end
+  local w = vim.api.nvim_win_get_width(0)
+  local h = vim.api.nvim_win_get_height(0)
+  pcall(vim.fn.jobresize, job, w, math.max(1, h - 1))
   vim.defer_fn(function()
-    if vim.api.nvim_win_is_valid(win) then
-      pcall(vim.api.nvim_win_set_height, win, h)
-      pcall(vim.api.nvim_win_set_width, win, w)
-    end
+    pcall(vim.fn.jobresize, job, w, h)
   end, 40)
 end
 
