@@ -207,7 +207,7 @@ vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper win
 -- Jump straight back to the code editor from anywhere -- including from inside a terminal
 -- (Claude / toggleterm), since this is also a terminal-mode mapping. Focuses the previous
 -- window if it holds a real file, otherwise the first file window in the tab (buftype '').
-vim.keymap.set({ 'n', 't' }, '<C-g>', function()
+vim.keymap.set({ 'n', 't' }, '<C-t>', function()
   local function is_file_win(win)
     return vim.api.nvim_win_is_valid(win) and vim.bo[vim.api.nvim_win_get_buf(win)].buftype == ''
   end
