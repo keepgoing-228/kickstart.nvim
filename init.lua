@@ -1144,6 +1144,10 @@ require('lazy').setup({
       vim.g.lazygit_floating_window_border_chars = { '╭', '─', '╮', '│', '╯', '─', '╰', '│' } -- customize lazygit popup window border characters
       vim.g.lazygit_floating_window_use_plenary = 1 -- use plenary.nvim to manage floating window if available
       vim.g.lazygit_use_neovim_remote = 1 -- fallback to 0 if neovim-remote is not installed
+      -- Follow lazygit across worktrees: when you switch worktree inside lazygit and quit,
+      -- Neovim's cwd moves to that worktree and open buffers are swapped for the same files
+      -- there (unsaved buffers are kept). Switch back in lazygit to return.
+      vim.g.lazygit_worktree_switch = 1
     end,
   },
 
